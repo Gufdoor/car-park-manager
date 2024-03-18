@@ -1,4 +1,7 @@
 import "package:car_park_manager/src/modules/management/bloc/management_state.dart";
+import "package:car_park_manager/src/modules/management/domain/enums/parking_space_status_enum.dart";
+import "package:car_park_manager/src/modules/management/domain/models/car_park_model.dart";
+import "package:car_park_manager/src/modules/management/domain/models/register_model.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_modular/flutter_modular.dart";
 
@@ -7,81 +10,98 @@ class ManagementCubit extends Cubit<ManagementState> implements Disposable {
     // _init();
   }
 
-  // final ConnectionController _connectionService = ConnectionController.instance;
-  //
-  // late DeviceModel _device = DeviceModel();
-  //
-  // late StreamSubscription<double> _concentrationSubscription;
-  //
+  late CarParkModel? _carPark;
+
   @override
-  void dispose() {
-    // _device = DeviceModel();
-    // unawaited(_concentrationSubscription.cancel());
-  }
-//
-// Future<bool> connectDevice(String ip) async {
-//   AppWrapCubit.instance.initLoading(message: "Carregando");
-//
-//   final bool hasSucceeded = await _connectionService.connect(ip);
-//
-//   if (hasSucceeded) {
-//     Modular.to.navigate(routeDevice);
-//     _device.ip = ip;
-//   }
-//
-//   AppWrapCubit.instance.finishLoading();
-//   _update();
-//   return hasSucceeded;
-// }
-//
-// void disconnectDevice() {
-//   AppWrapCubit.instance.initLoading(message: "Carregando");
-//
-//   _connectionService.disconnect();
-//   _device = DeviceModel();
-//   Modular.to.navigate(routeConnect);
-//
-//   AppWrapCubit.instance.finishLoading();
-//   _update();
-// }
-//
-// void setEnvironment(EnvironmentSettingEnum environment) {
-//   _device.environment = environment;
-//   _update();
-// }
-//
+  void dispose() {}
+
 // void _init() async {
 //   AppWrapCubit.init();
 //   ConnectionController.init();
 //   _startListeners();
 // }
-//
-// void _startListeners() {
-//   _concentrationSubscription = ConnectionController
-//       .instance.streamConcentration
-//       .listen((concentration) {
-//     _handleConcentrationCallback(concentration);
-//   });
-// }
-//
-// void _handleConcentrationCallback(double concentration) {
-//   final double percentage = concentration / 4095;
-//   _device.gasConcentration = percentage * _device.environment.ratio;
-//   print(">>> $concentration | $percentage");
-//   if (percentage < LeakageStatusEnum.attention.percentage) {
-//     _device.leakage = LeakageStatusEnum.secure;
-//   } else if (percentage < LeakageStatusEnum.danger.percentage) {
-//     _device.leakage = LeakageStatusEnum.attention;
-//   } else if (percentage < LeakageStatusEnum.critic.percentage) {
-//     _device.leakage = LeakageStatusEnum.danger;
-//   } else {
-//     _device.leakage = LeakageStatusEnum.critic;
-//   }
-//
-//   _update();
-// }
-//
-// void _update() {
-//   emit(state.copyWith(status: GasecStatus.initial, device: _device));
-// }
+
+  /// region Public methods
+
+  void setCarPark(String auxVacancies) {
+    if (auxVacancies.isEmpty || auxVacancies.contains(RegExp(r'[^0-9]'))) {
+      return;
+    }
+
+    final int vacancies = int.parse(
+      auxVacancies.replaceAll(RegExp(r'[^0-9]'), ''),
+    );
+
+    _carPark = CarParkModel(vacancies: vacancies);
+    _carPark!.generateParkingSpaces();
+    _update();
+  }
+
+  void clearRegisters() {
+    _carPark = null;
+    _update();
+  }
+
+  void toggleParkingSpaceAvailability(int parkingSpaceId) {
+    final int index = _carPark!.parkingSpaces!
+        .indexWhere((parkingSpace) => parkingSpace.id == parkingSpaceId);
+
+    if (index < 0) {
+      return;
+    }
+
+    if (_carPark!.parkingSpaces![index].status ==
+        ParkingSpaceStatusEnum.unavailable) {
+      _carPark!.parkingSpaces![index].status = ParkingSpaceStatusEnum.vacant;
+    } else {
+      _carPark!.parkingSpaces![index].status =
+          ParkingSpaceStatusEnum.unavailable;
+    }
+
+    _update();
+  }
+
+  void checkInVehicle(String licensePlate, int parkingSpaceId) {
+    final int index = _carPark!.parkingSpaces!
+        .indexWhere((parkingSpace) => parkingSpace.id == parkingSpaceId);
+
+    if (index < 0) {
+      return;
+    }
+
+    _carPark!.parkingSpaces![index].registers!.add(
+      RegisterModel(
+        licensePlate: licensePlate.toUpperCase(),
+        parkingSpaceId: parkingSpaceId,
+        checkIn: DateTime.now().millisecondsSinceEpoch,
+      ),
+    );
+
+    _carPark!.parkingSpaces![index].status = ParkingSpaceStatusEnum.occupied;
+    _update();
+  }
+
+  void checkOutVehicle(int parkingSpaceId) {
+    final int index = _carPark!.parkingSpaces!
+        .indexWhere((parkingSpace) => parkingSpace.id == parkingSpaceId);
+
+    if (index < 0) {
+      return;
+    }
+
+    _carPark!.parkingSpaces![index].registers!.last.checkOut =
+        DateTime.now().millisecondsSinceEpoch;
+    _carPark!.parkingSpaces![index].status = ParkingSpaceStatusEnum.vacant;
+    _update();
+  }
+
+  /// endregion Public methods
+
+  /// region Private methods
+
+  void _update() {
+    emit(state.copyWith(status: ManagerCubitStatus.initial, carPark: _carPark));
+  }
+
+  /// endregion Private methods
 }

@@ -21,7 +21,7 @@ class ManagementState extends Equatable {
     return ManagementState(
       isRefresh: !isRefresh,
       status: status ?? this.status,
-      carPark: carPark ?? this.carPark,
+      carPark: carPark,
     );
   }
 

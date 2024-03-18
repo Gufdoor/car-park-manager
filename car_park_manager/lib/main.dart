@@ -21,12 +21,7 @@ class _MyAppState extends State<MainApp> {
     Modular.setInitialRoute(routeManager);
 
     return MaterialApp.router(
-      theme: ThemeData(
-        fontFamily: "Nunito-Sans",
-        // colorScheme: ThemeData().colorScheme.copyWith(
-        //       surfaceTint: Colors.transparent,
-        //     ),
-      ),
+      theme: ThemeData(fontFamily: "Nunito-Sans"),
       routeInformationParser: Modular.routeInformationParser,
       routerDelegate: Modular.routerDelegate,
       debugShowCheckedModeBanner: false,

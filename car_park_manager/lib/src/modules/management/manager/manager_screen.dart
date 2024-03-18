@@ -1,7 +1,14 @@
+import 'package:car_park_manager/src/core/helpers/timestamp_helper.dart';
+import 'package:car_park_manager/src/domain/constants/custom_colors_constants.dart';
 import 'package:car_park_manager/src/modules/management/bloc/management_cubit.dart';
 import 'package:car_park_manager/src/modules/management/bloc/management_state.dart';
+import 'package:car_park_manager/src/modules/management/domain/enums/parking_space_status_enum.dart';
 import 'package:car_park_manager/src/modules/management/domain/models/car_park_model.dart';
+import 'package:car_park_manager/src/modules/management/domain/models/parking_space_model.dart';
+import 'package:car_park_manager/src/modules/management/domain/models/register_model.dart';
 import 'package:car_park_manager/src/modules/management/management_module.dart';
+import 'package:car_park_manager/src/modules/management/widgets/custom_parking_space_tile.dart';
+import 'package:car_park_manager/src/modules/management/widgets/custom_register_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -17,6 +24,8 @@ class _ManagerScreenState extends State<ManagerScreen> {
   late int selectedTab = 0;
   late bool isCarParkSet;
   final PageController pageController = PageController(initialPage: 0);
+  late List<RegisterModel> registers = [];
+  late List<RegisterModel> todayRegisters = [];
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +33,17 @@ class _ManagerScreenState extends State<ManagerScreen> {
       child: BlocBuilder<ManagementCubit, ManagementState>(
         builder: (context, state) {
           isCarParkSet = state.carPark != null;
+
+          if (isCarParkSet) {
+            handleRegisters(state.carPark!);
+          }
+
           return Scaffold(
             appBar: AppBar(
               title: const Text(
                 "Car Park Manager",
                 style: TextStyle(
-                  color: Color(0xFF393E41),
+                  color: CustomColorsConstants.onyx,
                   fontSize: 20.0,
                   fontWeight: FontWeight.w400,
                 ),
@@ -48,7 +62,10 @@ class _ManagerScreenState extends State<ManagerScreen> {
               ],
             ),
             body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 40.0,
+              ),
               child: PageView(
                 controller: pageController,
                 physics: const NeverScrollableScrollPhysics(),
@@ -62,15 +79,15 @@ class _ManagerScreenState extends State<ManagerScreen> {
               type: BottomNavigationBarType.fixed,
               currentIndex: selectedTab,
               selectedItemColor: Colors.indigo,
-              unselectedItemColor: const Color(0xFF393E41),
+              unselectedItemColor: CustomColorsConstants.onyx,
               showUnselectedLabels: true,
               onTap: (index) {
                 setState(() => selectedTab = index);
                 pageController.jumpToPage(index);
               },
               items: [
-                buildBarItem("Estacionamento"),
-                buildBarItem("Registro"),
+                handleBarItem("Estacionamento", Icons.local_parking),
+                handleBarItem("Registro", Icons.view_list),
               ],
             ),
           );
@@ -79,13 +96,10 @@ class _ManagerScreenState extends State<ManagerScreen> {
     );
   }
 
-  BottomNavigationBarItem buildBarItem(String text) {
+  BottomNavigationBarItem handleBarItem(String label, IconData icon) {
     return BottomNavigationBarItem(
-      icon: const Icon(
-        Icons.view_list,
-        size: 25.0,
-      ),
-      label: text,
+      icon: Icon(icon, size: 25.0),
+      label: label,
     );
   }
 
@@ -100,67 +114,170 @@ class _ManagerScreenState extends State<ManagerScreen> {
   Widget handleRegisterTab() {
     return BlocBuilder<ManagementCubit, ManagementState>(
       builder: (context, state) {
-        return isCarParkSet ? buildRegisterTab() : buildEmptyTab();
+        return isCarParkSet
+            ? buildRegisterTab(state.carPark!)
+            : buildEmptyTab();
       },
     );
   }
 
   Widget buildCarParkTab(CarParkModel carPark) {
-    return Column(
-      children: [
-        const Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "Vagas atuais",
-            style: TextStyle(
-              color: Color(0xFF393E41),
-              fontSize: 26.0,
-              fontWeight: FontWeight.w500,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Vagas atuais",
+              style: TextStyle(
+                color: CustomColorsConstants.onyx,
+                fontSize: 26.0,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 4.0),
-        const Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "Gerencie as vagas do seu estacionamento",
-            style: TextStyle(
-              color: Color(0xFF393E41),
-              fontSize: 18.0,
-              fontWeight: FontWeight.w300,
+          const SizedBox(height: 4.0),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Clique nas vagas para gerenciar o estacionamento",
+              style: TextStyle(
+                color: CustomColorsConstants.onyx,
+                fontSize: 18.0,
+                fontWeight: FontWeight.w300,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 40.0),
-        const Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "Vagas desocupadas: 4",
-            style: TextStyle(
-              color: Color(0xFF393E41),
-              fontSize: 20.0,
-              fontWeight: FontWeight.w400,
+          const SizedBox(height: 40.0),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Vagas desocupadas: ${getVacanciesAmount(carPark.parkingSpaces!)}",
+              style: const TextStyle(
+                color: CustomColorsConstants.onyx,
+                fontSize: 20.0,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
-        ),
-        const Spacer(),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.indigo,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0),
+          const SizedBox(height: 20.0),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: carPark.vacancies,
+            itemBuilder: (context, index) {
+              return CustomParkingSpaceTile(
+                parkingSpaceIndex: index,
+                parkingSpace: carPark.parkingSpaces![index],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildRegisterTab(CarParkModel carPark) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Registro das vagas",
+              style: TextStyle(
+                color: CustomColorsConstants.onyx,
+                fontSize: 26.0,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
-          onPressed: () {},
-          child: const Text(
-            "Chamar emergência",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20.0,
+          const SizedBox(height: 4.0),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Visualize os registros de check-in e check-out cada vaga em ordem",
+              style: TextStyle(
+                color: CustomColorsConstants.onyx,
+                fontSize: 18.0,
+                fontWeight: FontWeight.w300,
+              ),
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 40.0),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Registros do dia",
+              style: TextStyle(
+                color: CustomColorsConstants.onyx,
+                fontSize: 20.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4.0),
+          todayRegisters.isEmpty
+              ? const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Não há registros no momento",
+                    style: TextStyle(
+                      color: CustomColorsConstants.onyx,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                )
+              : ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 300.0),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: todayRegisters.length,
+                    itemBuilder: (context, index) {
+                      return CustomRegisterTile(
+                        register: todayRegisters[index],
+                      );
+                    },
+                  ),
+                ),
+          const Divider(height: 30.0),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Todos os registros",
+              style: TextStyle(
+                color: CustomColorsConstants.onyx,
+                fontSize: 20.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4.0),
+          registers.isEmpty
+              ? const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Não há registros no momento",
+                    style: TextStyle(
+                      color: CustomColorsConstants.onyx,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w300,
+                    ),
+                  ),
+                )
+              : ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 300.0),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: registers.length,
+                    itemBuilder: (context, index) {
+                      return CustomRegisterTile(register: registers[index]);
+                    },
+                  ),
+                ),
+        ],
+      ),
     );
   }
 
@@ -171,7 +288,7 @@ class _ManagerScreenState extends State<ManagerScreen> {
         const Text(
           "Você ainda não configurou o estacionamento",
           style: TextStyle(
-            color: Color(0xFF393E41),
+            color: CustomColorsConstants.onyx,
             fontSize: 26.0,
             fontWeight: FontWeight.w500,
           ),
@@ -181,7 +298,7 @@ class _ManagerScreenState extends State<ManagerScreen> {
         const Text(
           "Acesse as configurações e informe a quantidade de vagas possui o estacionamento",
           style: TextStyle(
-            color: Color(0xFF393E41),
+            color: CustomColorsConstants.onyx,
             fontSize: 16.0,
             fontWeight: FontWeight.w400,
           ),
@@ -208,7 +325,27 @@ class _ManagerScreenState extends State<ManagerScreen> {
     );
   }
 
-  Widget buildRegisterTab() {
-    return Container();
+  String getVacanciesAmount(List<ParkingSpaceModel> parkingSpaces) {
+    return parkingSpaces
+        .where((ps) => ps.status == ParkingSpaceStatusEnum.vacant)
+        .length
+        .toString();
+  }
+
+  void handleRegisters(CarParkModel carPark) {
+    registers = carPark.getAllRegisters();
+    todayRegisters.clear();
+    final int todayTimestamp = TimestampHelper.getTodayTimestamp();
+    final int tomorrowTimestamp = TimestampHelper.getTodayTimestamp() +
+        TimestampHelper.oneDayMilliseconds;
+
+    for (final register in registers) {
+      if ((register.checkIn >= todayTimestamp &&
+              register.checkIn < tomorrowTimestamp) ||
+          register.checkOut >= todayTimestamp &&
+              register.checkOut < tomorrowTimestamp) {
+        todayRegisters.add(register);
+      }
+    }
   }
 }
