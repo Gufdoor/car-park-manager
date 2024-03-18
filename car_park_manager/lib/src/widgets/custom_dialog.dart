@@ -48,7 +48,6 @@ class CustomDialog extends StatelessWidget {
           children: [
             TextButton(
               child: const Text(
-                // TODO remover cancelar
                 "Cancelar",
                 style: TextStyle(fontSize: 20.0),
               ),

@@ -149,6 +149,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final List<Widget> body = [
       const SizedBox(height: 16.0),
       TextFormField(
+        key: const ValueKey("vacancies"),
         keyboardType: TextInputType.number,
         controller: vacanciesController,
         style: const TextStyle(
@@ -167,6 +168,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ];
 
     final Widget rightButton = TextButton(
+      key: const ValueKey("setVacancies"),
       child: const Text(
         "Alterar",
         style: TextStyle(fontSize: 20.0, color: CustomColorsConstants.coralRed),

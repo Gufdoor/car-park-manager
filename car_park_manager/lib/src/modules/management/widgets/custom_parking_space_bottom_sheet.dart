@@ -277,6 +277,7 @@ class _CustomParkingSpaceBottomSheetState
         ),
         const SizedBox(height: 4.0),
         TextFormField(
+          key: const ValueKey("licensePlate"),
           keyboardType: TextInputType.text,
           maxLength: 7,
           controller: licensePlateController,
@@ -298,6 +299,7 @@ class _CustomParkingSpaceBottomSheetState
         ),
         const SizedBox(height: 20.0),
         ElevatedButton(
+          key: const ValueKey("setLicensePlate"),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.indigo,
             shape: RoundedRectangleBorder(

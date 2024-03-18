@@ -1,21 +1,21 @@
 import "package:car_park_manager/src/modules/management/domain/models/car_park_model.dart";
 import "package:equatable/equatable.dart";
 
-enum ManagerCubitStatus { initial, loading }
+enum ManagementCubitStatus { initial, loading }
 
 class ManagementState extends Equatable {
   final bool isRefresh;
-  final ManagerCubitStatus status;
+  final ManagementCubitStatus status;
   final CarParkModel? carPark;
 
   const ManagementState({
     this.isRefresh = false,
-    this.status = ManagerCubitStatus.loading,
+    this.status = ManagementCubitStatus.loading,
     this.carPark,
   });
 
   ManagementState copyWith({
-    ManagerCubitStatus? status,
+    ManagementCubitStatus? status,
     CarParkModel? carPark,
   }) {
     return ManagementState(
