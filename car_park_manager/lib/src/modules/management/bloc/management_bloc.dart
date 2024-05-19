@@ -3,22 +3,30 @@ import "package:car_park_manager/src/modules/management/domain/enums/parking_spa
 import "package:car_park_manager/src/modules/management/domain/models/car_park_model.dart";
 import "package:car_park_manager/src/modules/management/domain/models/register_model.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
+import "package:flutter_modular/flutter_modular.dart";
 
-class ManagementCubit extends Cubit<ManagementState> {
-  ManagementCubit() : super(const ManagementState());
+class ManagementBloc extends Cubit<ManagementState> implements Disposable {
+  ManagementBloc() : super(const ManagementState());
 
   late CarParkModel? _carPark;
 
   /// region Public methods
 
+  @override
+  void dispose() {
+    if (_carPark != null) {
+      _carPark = null;
+    }
+  }
+
   void setCarPark(String auxVacancies) {
     /// The regex below searches for numbers only
-    if (auxVacancies.isEmpty || auxVacancies.contains(RegExp(r'[^0-9]'))) {
+    if (auxVacancies.isEmpty || auxVacancies.contains(RegExp(r"[^0-9]"))) {
       return;
     }
 
     final int vacancies = int.parse(
-      auxVacancies.replaceAll(RegExp(r'[^0-9]'), ''),
+      auxVacancies.replaceAll(RegExp(r"[^0-9]"), ""),
     );
 
     _carPark = CarParkModel(vacancies: vacancies);
@@ -89,7 +97,8 @@ class ManagementCubit extends Cubit<ManagementState> {
   /// region Private methods
 
   void _update() {
-    emit(state.copyWith(status: ManagementCubitStatus.initial, carPark: _carPark));
+    emit(state.copyWith(
+        status: ManagementBlocStatus.initial, carPark: _carPark));
   }
 
   /// endregion Private methods

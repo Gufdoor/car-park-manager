@@ -1,17 +1,17 @@
-import 'package:car_park_manager/src/core/helpers/timestamp_helper.dart';
-import 'package:car_park_manager/src/domain/constants/custom_colors_constants.dart';
-import 'package:car_park_manager/src/modules/management/bloc/management_cubit.dart';
-import 'package:car_park_manager/src/modules/management/bloc/management_state.dart';
-import 'package:car_park_manager/src/modules/management/domain/enums/parking_space_status_enum.dart';
-import 'package:car_park_manager/src/modules/management/domain/models/car_park_model.dart';
-import 'package:car_park_manager/src/modules/management/domain/models/parking_space_model.dart';
-import 'package:car_park_manager/src/modules/management/domain/models/register_model.dart';
-import 'package:car_park_manager/src/modules/management/management_module.dart';
-import 'package:car_park_manager/src/modules/management/widgets/custom_parking_space_tile.dart';
-import 'package:car_park_manager/src/modules/management/widgets/custom_register_tile.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import "package:car_park_manager/src/core/helpers/timestamp_helper.dart";
+import "package:car_park_manager/src/domain/constants/custom_colors_constants.dart";
+import "package:car_park_manager/src/modules/management/bloc/management_bloc.dart";
+import "package:car_park_manager/src/modules/management/bloc/management_state.dart";
+import "package:car_park_manager/src/modules/management/domain/enums/parking_space_status_enum.dart";
+import "package:car_park_manager/src/modules/management/domain/models/car_park_model.dart";
+import "package:car_park_manager/src/modules/management/domain/models/parking_space_model.dart";
+import "package:car_park_manager/src/modules/management/domain/models/register_model.dart";
+import "package:car_park_manager/src/modules/management/management_module.dart";
+import "package:car_park_manager/src/modules/management/widgets/custom_parking_space_tile.dart";
+import "package:car_park_manager/src/modules/management/widgets/custom_register_tile.dart";
+import "package:flutter/material.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
+import "package:flutter_modular/flutter_modular.dart";
 
 class ManagerScreen extends StatefulWidget {
   const ManagerScreen({super.key});
@@ -30,7 +30,7 @@ class _ManagerScreenState extends State<ManagerScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: BlocBuilder<ManagementCubit, ManagementState>(
+      child: BlocBuilder<ManagementBloc, ManagementState>(
         builder: (context, state) {
           isCarParkSet = state.carPark != null;
 
@@ -43,7 +43,6 @@ class _ManagerScreenState extends State<ManagerScreen> {
               title: const Text(
                 "Car Park Manager",
                 style: TextStyle(
-                  color: CustomColorsConstants.onyx,
                   fontSize: 20.0,
                   fontWeight: FontWeight.w400,
                 ),
@@ -53,7 +52,7 @@ class _ManagerScreenState extends State<ManagerScreen> {
               centerTitle: true,
               actions: [
                 IconButton(
-                  onPressed: () => Modular.to.pushNamed(routeSettings),
+                  onPressed: () async => Modular.to.pushNamed(routeSettings),
                   icon: const Icon(
                     Icons.settings,
                     size: 30.0,
@@ -78,8 +77,7 @@ class _ManagerScreenState extends State<ManagerScreen> {
             bottomNavigationBar: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
               currentIndex: selectedTab,
-              selectedItemColor: Colors.indigo,
-              unselectedItemColor: CustomColorsConstants.onyx,
+              selectedItemColor: CustomColorsConstants.indigo,
               showUnselectedLabels: true,
               onTap: (index) {
                 setState(() => selectedTab = index);
@@ -104,7 +102,7 @@ class _ManagerScreenState extends State<ManagerScreen> {
   }
 
   Widget handleCarParkTab() {
-    return BlocBuilder<ManagementCubit, ManagementState>(
+    return BlocBuilder<ManagementBloc, ManagementState>(
       builder: (context, state) {
         return isCarParkSet ? buildCarParkTab(state.carPark!) : buildEmptyTab();
       },
@@ -112,7 +110,7 @@ class _ManagerScreenState extends State<ManagerScreen> {
   }
 
   Widget handleRegisterTab() {
-    return BlocBuilder<ManagementCubit, ManagementState>(
+    return BlocBuilder<ManagementBloc, ManagementState>(
       builder: (context, state) {
         return isCarParkSet
             ? buildRegisterTab(state.carPark!)
@@ -130,7 +128,6 @@ class _ManagerScreenState extends State<ManagerScreen> {
             child: Text(
               "Vagas atuais",
               style: TextStyle(
-                color: CustomColorsConstants.onyx,
                 fontSize: 26.0,
                 fontWeight: FontWeight.w500,
               ),
@@ -142,7 +139,6 @@ class _ManagerScreenState extends State<ManagerScreen> {
             child: Text(
               "Clique nas vagas para gerenciar o estacionamento",
               style: TextStyle(
-                color: CustomColorsConstants.onyx,
                 fontSize: 18.0,
                 fontWeight: FontWeight.w300,
               ),
@@ -154,7 +150,6 @@ class _ManagerScreenState extends State<ManagerScreen> {
             child: Text(
               "Vagas desocupadas: ${getVacanciesAmount(carPark.parkingSpaces!)}",
               style: const TextStyle(
-                color: CustomColorsConstants.onyx,
                 fontSize: 20.0,
                 fontWeight: FontWeight.w400,
               ),
@@ -186,7 +181,6 @@ class _ManagerScreenState extends State<ManagerScreen> {
             child: Text(
               "Registro das vagas",
               style: TextStyle(
-                color: CustomColorsConstants.onyx,
                 fontSize: 26.0,
                 fontWeight: FontWeight.w500,
               ),
@@ -198,7 +192,6 @@ class _ManagerScreenState extends State<ManagerScreen> {
             child: Text(
               "Visualize os registros de check-in e check-out cada vaga em ordem",
               style: TextStyle(
-                color: CustomColorsConstants.onyx,
                 fontSize: 18.0,
                 fontWeight: FontWeight.w300,
               ),
@@ -210,7 +203,6 @@ class _ManagerScreenState extends State<ManagerScreen> {
             child: Text(
               "Registros do dia",
               style: TextStyle(
-                color: CustomColorsConstants.onyx,
                 fontSize: 20.0,
                 fontWeight: FontWeight.w500,
               ),
@@ -223,7 +215,6 @@ class _ManagerScreenState extends State<ManagerScreen> {
                   child: Text(
                     "Não há registros no momento",
                     style: TextStyle(
-                      color: CustomColorsConstants.onyx,
                       fontSize: 18.0,
                       fontWeight: FontWeight.w300,
                     ),
@@ -247,7 +238,6 @@ class _ManagerScreenState extends State<ManagerScreen> {
             child: Text(
               "Todos os registros",
               style: TextStyle(
-                color: CustomColorsConstants.onyx,
                 fontSize: 20.0,
                 fontWeight: FontWeight.w500,
               ),
@@ -260,7 +250,6 @@ class _ManagerScreenState extends State<ManagerScreen> {
                   child: Text(
                     "Não há registros no momento",
                     style: TextStyle(
-                      color: CustomColorsConstants.onyx,
                       fontSize: 18.0,
                       fontWeight: FontWeight.w300,
                     ),
@@ -288,7 +277,6 @@ class _ManagerScreenState extends State<ManagerScreen> {
         const Text(
           "Você ainda não configurou o estacionamento",
           style: TextStyle(
-            color: CustomColorsConstants.onyx,
             fontSize: 26.0,
             fontWeight: FontWeight.w500,
           ),
@@ -298,7 +286,6 @@ class _ManagerScreenState extends State<ManagerScreen> {
         const Text(
           "Acesse as configurações e informe a quantidade de vagas possui o estacionamento",
           style: TextStyle(
-            color: CustomColorsConstants.onyx,
             fontSize: 16.0,
             fontWeight: FontWeight.w400,
           ),
@@ -307,7 +294,7 @@ class _ManagerScreenState extends State<ManagerScreen> {
         const SizedBox(height: 24.0),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.indigo,
+            backgroundColor: CustomColorsConstants.indigo,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5.0),
             ),
@@ -316,7 +303,7 @@ class _ManagerScreenState extends State<ManagerScreen> {
           child: const Text(
             "Configurações",
             style: TextStyle(
-              color: Colors.white,
+              color: CustomColorsConstants.white,
               fontSize: 20.0,
             ),
           ),

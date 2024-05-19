@@ -1,6 +1,6 @@
 import "package:car_park_manager/src/core/helpers/timestamp_helper.dart";
 import "package:car_park_manager/src/domain/constants/custom_colors_constants.dart";
-import "package:car_park_manager/src/modules/management/bloc/management_cubit.dart";
+import "package:car_park_manager/src/modules/management/bloc/management_bloc.dart";
 import "package:car_park_manager/src/modules/management/bloc/management_state.dart";
 import "package:car_park_manager/src/modules/management/domain/models/register_model.dart";
 import "package:flutter/material.dart";
@@ -24,7 +24,7 @@ class _CustomRegisterBottomSheetState extends State<CustomRegisterBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ManagementCubit, ManagementState>(
+    return BlocBuilder<ManagementBloc, ManagementState>(
       builder: (context, state) {
         return SizedBox(
           height: 400.0,
@@ -44,86 +44,85 @@ class _CustomRegisterBottomSheetState extends State<CustomRegisterBottomSheet> {
   }
 
   Widget buildRegisterContent() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          height: 6.0,
-          width: 60.0,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4.0),
-            color: Colors.black45,
-          ),
-        ),
-        const SizedBox(height: 20.0),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "Vaga ${widget.register.parkingSpaceId}",
-            style: const TextStyle(
-              color: CustomColorsConstants.onyx,
-              fontSize: 24.0,
-              fontWeight: FontWeight.w500,
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 6.0,
+            width: 60.0,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4.0),
+              color: Colors.black45,
             ),
           ),
-        ),
-        const SizedBox(height: 20.0),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "Placa do caminhão: ${widget.register.licensePlate}",
-            style: const TextStyle(
-              color: CustomColorsConstants.onyx,
-              fontSize: 18.0,
-              fontWeight: FontWeight.w400,
+          const SizedBox(height: 20.0),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Vaga ${widget.register.parkingSpaceId}",
+              style: const TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
-        ),
-        const Divider(height: 20.0),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "Check-in: ${TimestampHelper.getDateTimeStringFromTimestamp(widget.register.checkIn)}",
-            style: const TextStyle(
-              color: CustomColorsConstants.onyx,
-              fontSize: 18.0,
-              fontWeight: FontWeight.w400,
+          const SizedBox(height: 20.0),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Placa do caminhão: ${widget.register.licensePlate}",
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
-        ),
-        const Divider(height: 20.0),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "Check-out: ${handleCheckOutText(widget.register.checkOut)}",
-            style: const TextStyle(
-              color: CustomColorsConstants.onyx,
-              fontSize: 18.0,
-              fontWeight: FontWeight.w400,
+          const Divider(height: 20.0),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Check-in: ${TimestampHelper.getDateTimeStringFromTimestamp(widget.register.checkIn)}",
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
-        ),
-        const Spacer(),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.indigo,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0),
+          const Divider(height: 20.0),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Check-out: ${handleCheckOutText(widget.register.checkOut)}",
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
-          onPressed: () {
-            Navigator.of(context, rootNavigator: true).pop();
-          },
-          child: const Text(
-            "Fechar",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20.0,
+          const SizedBox(height: 20.0),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: CustomColorsConstants.indigo,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(context, rootNavigator: true).pop();
+            },
+            child: const Text(
+              "Fechar",
+              style: TextStyle(
+                color: CustomColorsConstants.white,
+                fontSize: 20.0,
+              ),
             ),
           ),
-        ),
-      ],
+
+        ],
+      ),
     );
   }
 

@@ -1,4 +1,4 @@
-import "package:car_park_manager/src/modules/management/bloc/management_cubit.dart";
+import "package:car_park_manager/src/modules/management/bloc/management_bloc.dart";
 import "package:car_park_manager/src/modules/management/settings/settings_screen.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
@@ -12,12 +12,12 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  final ManagementCubit _managementCubit = Modular.get<ManagementCubit>();
+  final ManagementBloc _managementBloc = Modular.get<ManagementBloc>();
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: _managementCubit,
+      value: _managementBloc,
       child: const SettingsScreen(),
     );
   }

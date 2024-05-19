@@ -1,6 +1,7 @@
+import "dart:async";
+
 import "package:car_park_manager/src/core/helpers/timestamp_helper.dart";
-import "package:car_park_manager/src/domain/constants/custom_colors_constants.dart";
-import "package:car_park_manager/src/modules/management/bloc/management_cubit.dart";
+import "package:car_park_manager/src/modules/management/bloc/management_bloc.dart";
 import "package:car_park_manager/src/modules/management/domain/models/register_model.dart";
 import "package:car_park_manager/src/modules/management/widgets/custom_register_bottom_sheet.dart";
 import "package:flutter/material.dart";
@@ -29,33 +30,29 @@ class _CustomRegisterTileState extends State<CustomRegisterTile> {
           title: Text(
             "Vaga ${widget.register.parkingSpaceId.toString()}",
             style: const TextStyle(
-              color: CustomColorsConstants.onyx,
               fontWeight: FontWeight.w500,
             ),
           ),
           subtitle: Text(
             "Check-out: ${handleCheckOutText(widget.register.checkOut)}",
             style: const TextStyle(
-              color: CustomColorsConstants.onyx,
               fontWeight: FontWeight.w400,
             ),
           ),
           trailing: const Icon(
             Icons.more_horiz,
             size: 30.0,
-            color: CustomColorsConstants.onyx,
           ),
-          tileColor: CustomColorsConstants.brightGray,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
           ),
           onTap: () {
-            showModalBottomSheet(
+            unawaited(showModalBottomSheet(
               context: context,
               isScrollControlled: true,
-              builder: (BuildContext context) {
+              builder: (context) {
                 return BlocProvider.value(
-                  value: Modular.get<ManagementCubit>(),
+                  value: Modular.get<ManagementBloc>(),
                   child: Padding(
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -66,7 +63,7 @@ class _CustomRegisterTileState extends State<CustomRegisterTile> {
                   ),
                 );
               },
-            );
+            ));
           },
         ),
       ),

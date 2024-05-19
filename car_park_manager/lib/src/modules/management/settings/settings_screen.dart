@@ -1,11 +1,16 @@
-import 'package:car_park_manager/src/domain/constants/custom_colors_constants.dart';
-import 'package:car_park_manager/src/modules/management/bloc/management_cubit.dart';
-import 'package:car_park_manager/src/modules/management/bloc/management_state.dart';
-import 'package:car_park_manager/src/modules/management/management_module.dart';
-import 'package:car_park_manager/src/widgets/custom_dialog.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_modular/flutter_modular.dart';
+import "dart:async";
+
+import "package:car_park_manager/src/bloc/theme_bloc.dart";
+import "package:car_park_manager/src/bloc/theme_event.dart";
+import "package:car_park_manager/src/domain/constants/custom_colors_constants.dart";
+import "package:car_park_manager/src/modules/management/bloc/management_bloc.dart";
+import "package:car_park_manager/src/modules/management/bloc/management_state.dart";
+import "package:car_park_manager/src/modules/management/management_module.dart";
+import "package:car_park_manager/src/widgets/custom_dialog.dart";
+import "package:flutter/material.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
+import "package:flutter_modular/flutter_modular.dart"
+    hide ModularWatchExtension;
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -26,7 +31,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           title: const Text(
             "Configurações",
             style: TextStyle(
-              color: CustomColorsConstants.onyx,
               fontSize: 20.0,
               fontWeight: FontWeight.w400,
             ),
@@ -51,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget buildSettings() {
-    return BlocBuilder<ManagementCubit, ManagementState>(
+    return BlocBuilder<ManagementBloc, ManagementState>(
       builder: (context, state) {
         vacancies = state.carPark != null
             ? state.carPark!.vacancies.toString()
@@ -65,7 +69,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Text(
                   "Número de vagas no estacionamento",
                   style: TextStyle(
-                    color: CustomColorsConstants.onyx,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w400,
                   ),
@@ -79,7 +82,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: Text(
                       vacancies,
                       style: const TextStyle(
-                        color: CustomColorsConstants.onyx,
                         fontSize: 16.0,
                         fontWeight: FontWeight.w400,
                       ),
@@ -88,7 +90,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Flexible(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.indigo,
+                        backgroundColor: CustomColorsConstants.indigo,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5.0),
                         ),
@@ -97,7 +99,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: const Text(
                         "Alterar",
                         style: TextStyle(
-                          color: Colors.white,
+                          color: CustomColorsConstants.white,
                           fontSize: 20.0,
                         ),
                       ),
@@ -113,7 +115,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: Text(
                       "Limpar dados de registro",
                       style: TextStyle(
-                        color: CustomColorsConstants.onyx,
                         fontSize: 18.0,
                         fontWeight: FontWeight.w400,
                       ),
@@ -130,13 +131,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: const Text(
                       "Limpar dados",
                       style: TextStyle(
-                        color: Colors.white,
                         fontSize: 20.0,
+                        color: CustomColorsConstants.white,
                       ),
                     ),
                   ),
                 ],
               ),
+              const Divider(height: 30.0),
+              BlocBuilder<ThemeBloc, bool>(builder: (context, state) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        "Tema: ${state ? "Escuro" : "Claro"}",
+                        style: const TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    Switch(
+                      value: state,
+                      onChanged: (value) {
+                        context.read<ThemeBloc>().add(ChangeTheme());
+                      },
+                    ),
+                  ],
+                );
+              }),
               const Divider(height: 30.0),
             ],
           ),
@@ -154,7 +178,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         controller: vacanciesController,
         style: const TextStyle(
           fontSize: 18.0,
-          color: CustomColorsConstants.onyx,
         ),
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.all(10.0),
@@ -171,10 +194,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       key: const ValueKey("setVacancies"),
       child: const Text(
         "Alterar",
-        style: TextStyle(fontSize: 20.0, color: CustomColorsConstants.coralRed),
+        style: TextStyle(fontSize: 20.0),
       ),
       onPressed: () {
-        Modular.get<ManagementCubit>().setCarPark(vacanciesController.text);
+        Modular.get<ManagementBloc>().setCarPark(vacanciesController.text);
         vacanciesController.clear();
         Navigator.of(context, rootNavigator: true).pop();
       },
@@ -192,10 +215,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final Widget rightButton = TextButton(
       child: const Text(
         "Limpar dados",
-        style: TextStyle(fontSize: 20.0, color: CustomColorsConstants.coralRed),
+        style: TextStyle(fontSize: 20.0),
       ),
       onPressed: () {
-        Modular.get<ManagementCubit>().clearRegisters();
+        Modular.get<ManagementBloc>().clearRegisters();
         Navigator.of(context, rootNavigator: true).pop();
       },
     );
@@ -214,7 +237,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Widget rightButton,
     List<Widget> body,
   ) {
-    showDialog(
+    unawaited(showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) {
@@ -225,6 +248,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           rightButton: rightButton,
         );
       },
-    );
+    ));
   }
 }

@@ -1,5 +1,7 @@
+import "dart:async";
+
 import "package:car_park_manager/src/domain/constants/custom_colors_constants.dart";
-import "package:car_park_manager/src/modules/management/bloc/management_cubit.dart";
+import "package:car_park_manager/src/modules/management/bloc/management_bloc.dart";
 import "package:car_park_manager/src/modules/management/domain/models/parking_space_model.dart";
 import "package:car_park_manager/src/modules/management/widgets/custom_parking_space_bottom_sheet.dart";
 import "package:flutter/material.dart";
@@ -29,19 +31,13 @@ class _CustomParkingSpaceTileState extends State<CustomParkingSpaceTile> {
         child: ListTile(
           title: Text(
             "Vaga ${widget.parkingSpace.id.toString()}",
-            style: const TextStyle(
-              color: CustomColorsConstants.onyx,
-              fontWeight: FontWeight.w400,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w400),
           ),
           subtitle: Text(
             widget.parkingSpace.registers!.isEmpty
                 ? "Nenhum caminhão registrado"
                 : "Placa: ${widget.parkingSpace.registers!.last.licensePlate}",
-            style: const TextStyle(
-              color: CustomColorsConstants.onyx,
-              fontWeight: FontWeight.w400,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w400),
           ),
           trailing: Container(
             constraints: const BoxConstraints(maxWidth: 100.0),
@@ -54,24 +50,24 @@ class _CustomParkingSpaceTileState extends State<CustomParkingSpaceTile> {
               child: Text(
                 widget.parkingSpace.status.title,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: CustomColorsConstants.white,
                   fontSize: 14.0,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ),
           ),
-          tileColor: CustomColorsConstants.brightGray,
+          // tileColor: LightColorsConstants.brightGray,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
           ),
           onTap: () {
-            showModalBottomSheet(
+            unawaited(showModalBottomSheet(
               context: context,
               isScrollControlled: true,
-              builder: (BuildContext context) {
+              builder: (context) {
                 return BlocProvider.value(
-                  value: Modular.get<ManagementCubit>(),
+                  value: Modular.get<ManagementBloc>(),
                   child: Padding(
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -82,7 +78,7 @@ class _CustomParkingSpaceTileState extends State<CustomParkingSpaceTile> {
                   ),
                 );
               },
-            );
+            ));
           },
         ),
       ),

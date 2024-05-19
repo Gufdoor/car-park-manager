@@ -1,4 +1,3 @@
-import "package:car_park_manager/src/domain/constants/custom_colors_constants.dart";
 import "package:flutter/material.dart";
 
 class CustomDialog extends StatelessWidget {
@@ -24,19 +23,13 @@ class CustomDialog extends StatelessWidget {
     return AlertDialog(
       title: Text(
         title,
-        style: titleStyle ??
-            const TextStyle(
-              fontSize: 20.0,
-              color: CustomColorsConstants.onyx,
-            ),
+        style: titleStyle ?? const TextStyle(fontSize: 20.0),
       ),
       content: SingleChildScrollView(
         child: ListBody(
           children: [
             Text(
               text,
-              style: textStyle ??
-                  const TextStyle(color: CustomColorsConstants.onyx),
             ),
             ...body,
           ],

@@ -1,5 +1,5 @@
 import "package:bloc_test/bloc_test.dart";
-import "package:car_park_manager/src/modules/management/bloc/management_cubit.dart";
+import "package:car_park_manager/src/modules/management/bloc/management_bloc.dart";
 import "package:car_park_manager/src/modules/management/bloc/management_state.dart";
 import "package:flutter_test/flutter_test.dart";
 
@@ -7,7 +7,7 @@ void main() {
   group("ManagementCubit", () {
     setUp(() {});
 
-    ManagementCubit buildCubit() => ManagementCubit();
+    ManagementBloc buildCubit() => ManagementBloc();
 
     group("Constructor", () {
       test("Calling cubit constructor should initiate correctly", () {
@@ -22,21 +22,21 @@ void main() {
     group("Methods", () {
       blocTest(
         "Given a new car park set with n vacancies when setCarPark is called then should instantiate the model with n vacancies",
-        build: () => ManagementCubit(),
+        build: () => ManagementBloc(),
         act: (cubit) => cubit.setCarPark("5"),
         expect: () => [isA<ManagementState>()],
       );
 
       blocTest(
         "When calling clearRegisters then carPark instance should be reset to null",
-        build: () => ManagementCubit(),
+        build: () => ManagementBloc(),
         act: (cubit) => cubit.clearRegisters(),
         expect: () => [isA<ManagementState>()],
       );
 
       blocTest(
         "When calling toggleParkingSpaceAvailability then desired parkingSpace should update status to unavailable",
-        build: () => ManagementCubit(),
+        build: () => ManagementBloc(),
         act: (cubit) {
           cubit.setCarPark("7");
           cubit.toggleParkingSpaceAvailability(0);
@@ -47,7 +47,7 @@ void main() {
 
       blocTest(
         "When calling checkInVehicle then a register for the desired parkingSpaceModel should be updated",
-        build: () => ManagementCubit(),
+        build: () => ManagementBloc(),
         act: (cubit) {
           cubit.setCarPark("7");
           cubit.checkInVehicle("abc1324", 0);
@@ -58,7 +58,7 @@ void main() {
 
       blocTest(
         "When calling checkOutVehicle then a register for the desired parkingSpaceModel should be updated",
-        build: () => ManagementCubit(),
+        build: () => ManagementBloc(),
         act: (cubit) {
           cubit.setCarPark("7");
           cubit.checkInVehicle("abc1324", 0);

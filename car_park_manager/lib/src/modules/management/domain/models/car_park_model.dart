@@ -1,5 +1,5 @@
-import 'package:car_park_manager/src/modules/management/domain/models/parking_space_model.dart';
-import 'package:car_park_manager/src/modules/management/domain/models/register_model.dart';
+import "package:car_park_manager/src/modules/management/domain/models/parking_space_model.dart";
+import "package:car_park_manager/src/modules/management/domain/models/register_model.dart";
 
 class CarParkModel {
   late int vacancies;

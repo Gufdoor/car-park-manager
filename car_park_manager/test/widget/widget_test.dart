@@ -1,10 +1,10 @@
-import 'package:car_park_manager/src/modules/management/domain/enums/parking_space_status_enum.dart';
-import 'package:car_park_manager/src/modules/management/domain/models/parking_space_model.dart';
-import 'package:car_park_manager/src/modules/management/domain/models/register_model.dart';
-import 'package:car_park_manager/src/modules/management/widgets/custom_parking_space_tile.dart';
-import 'package:car_park_manager/src/modules/management/widgets/custom_register_tile.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
+import "package:car_park_manager/src/modules/management/domain/enums/parking_space_status_enum.dart";
+import "package:car_park_manager/src/modules/management/domain/models/parking_space_model.dart";
+import "package:car_park_manager/src/modules/management/domain/models/register_model.dart";
+import "package:car_park_manager/src/modules/management/widgets/custom_parking_space_tile.dart";
+import "package:car_park_manager/src/modules/management/widgets/custom_register_tile.dart";
+import "package:flutter/material.dart";
+import "package:flutter_test/flutter_test.dart";
 
 void main() {
   group("Tiles", () {

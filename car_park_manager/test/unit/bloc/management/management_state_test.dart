@@ -14,10 +14,10 @@ void main() {
 
     test("Given an objects when updated it should update on state too", () {
       expect(
-        createSubject().copyWith(status: ManagementCubitStatus.initial),
+        createSubject().copyWith(status: ManagementBlocStatus.initial),
         const ManagementState(
           isRefresh: true,
-          status: ManagementCubitStatus.initial,
+          status: ManagementBlocStatus.initial,
         ),
       );
     });

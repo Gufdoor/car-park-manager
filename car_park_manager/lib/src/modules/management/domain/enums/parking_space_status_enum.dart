@@ -1,6 +1,6 @@
-import 'dart:ui';
+import "dart:ui";
 
-import 'package:car_park_manager/src/domain/constants/custom_colors_constants.dart';
+import "package:car_park_manager/src/domain/constants/custom_colors_constants.dart";
 
 enum ParkingSpaceStatusEnum {
   vacant("Disponível"),
